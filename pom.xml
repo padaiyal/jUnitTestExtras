@@ -3,11 +3,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
- 
-  <!-- Update the following three entries -->
-  <groupId>org.padaiyal</groupId>
-  <artifactId>mavenprojecttemplate</artifactId>
-  <version>2021.04.26</version>
+
+  <groupId>org.padaiyal.utilities</groupId>
+  <artifactId>unittestextras</artifactId>
+  <version>2021.05.21</version>
 
   <parent>
     <groupId>org.padaiyal</groupId>
@@ -15,12 +14,25 @@
     <version>2021.01.09</version>
     <relativePath>jPopper</relativePath>
   </parent>
+  <properties>
+    <dependency.jI18n.version>2021.01.14</dependency.jI18n.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.padaiyal.utilities</groupId>
+      <artifactId>i18n</artifactId>
+      <version>${dependency.jI18n.version}</version>
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/i18n-${dependency.jI18n.version}.jar</systemPath>
+    </dependency>
+  </dependencies>
 
   <distributionManagement>
     <repository>
       <id>github</id>
-      <name>jMavenProjectTemplate MVN package deployment</name>
-      <url>https://maven.pkg.github.com/padaiyal/jMavenProjectTemplate</url>
+      <name>jUnitTestExtras MVN package deployment</name>
+      <url>https://maven.pkg.github.com/padaiyal/jUnitTestExtras</url>
     </repository>
   </distributionManagement>
 
