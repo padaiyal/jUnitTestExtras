@@ -1,8 +1,11 @@
 package org.padaiyal.utilities.unittestextras.parameterconverters;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Function;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 import org.padaiyal.utilities.I18nUtility;
@@ -16,13 +19,11 @@ public class ArrayConverter extends SimpleArgumentConverter {
   /**
    * Initializes all dependant values.
    */
-  public static Runnable dependantValuesInitializer = () -> {
-    I18nUtility.addResourceBundle(
-        ArrayConverter.class,
-        ArrayConverter.class.getSimpleName(),
-        Locale.US
-    );
-  };
+  public static Runnable dependantValuesInitializer = () -> I18nUtility.addResourceBundle(
+      ArrayConverter.class,
+      ArrayConverter.class.getSimpleName(),
+      Locale.US
+  );
 
   static {
     dependantValuesInitializer.run();
@@ -58,43 +59,34 @@ public class ArrayConverter extends SimpleArgumentConverter {
       );
     }
     Object[] result = ((String) arrayObject).split(",");
-
     if (String[].class.isAssignableFrom(targetType)) {
       return result;
+    }
 
-    } else if (Integer[].class.isAssignableFrom(targetType)) {
-      return Arrays.stream(result)
-          .parallel()
-          .map(element -> Integer.parseInt(element.toString()))
-          .toArray();
+    HashMap<Class<?>, Function<String, ?>> map = new LinkedHashMap<>();
+    map.put(Boolean[].class, Boolean::valueOf);
+    map.put(Byte[].class, Byte::parseByte);
+    map.put(Short[].class, Short::parseShort);
+    map.put(Integer[].class, Integer::parseInt);
+    map.put(Long[].class, Long::parseLong);
+    map.put(Float[].class, Float::parseFloat);
+    map.put(Double[].class, Double::parseDouble);
 
-    } else if (Long[].class.isAssignableFrom(targetType)) {
-      return Arrays.stream(result)
-          .parallel()
-          .map(element -> Long.parseLong(element.toString()))
-          .toArray();
-
-    } else if (Float[].class.isAssignableFrom(targetType)) {
-      return Arrays.stream(result)
-          .parallel()
-          .map(element -> Float.parseFloat(element.toString()))
-          .toArray();
-
-    } else if (Double[].class.isAssignableFrom(targetType)) {
-      return Arrays.stream(result)
-          .parallel()
-          .map(element -> Double.parseDouble(element.toString()))
-          .toArray();
-
-    } else {
+    if (!map.containsKey(targetType)) {
       throw new ArgumentConversionException(
           I18nUtility.getFormattedString(
               "ArrayConverter.error.conversionNotSupported",
               arrayObject.getClass().getName(),
               targetType.getName()
-      ));
+          ));
     }
+
+    return Arrays.stream(result)
+        .parallel()
+        .map(element -> map.get(targetType).apply(element.toString()))
+        .toArray();
   }
+
 
   /**
    * Converts a string into an array of specified types.
